@@ -3,178 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Security Infrastructure</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap">
+    <title>ASI-Slides</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+        /* === VIEWPORT BASE === */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background: #06080d;
+        }
+
         html { scroll-behavior: smooth; }
 
         :root {
-            --canvas: #121418;
-            --stage: #0a0a0c;
-            --text: #ffffff;
-            --text-muted: #9ca3af;
-            --accent: #FC4C02;
-            --accent-bg: rgba(252, 76, 2, 0.1);
-            --surface: #1a1e24;
-            --surface-border: #333333;
-            --font-display: 'Space Grotesk', 'Noto Sans SC', sans-serif;
-            --font-body: 'Inter', 'Noto Sans SC', sans-serif;
+            --stage: #06080d;
+            --canvas: #0d1118;
+            --ink: #f4f7fb;
+            --muted: #9aa7b6;
+            --faint: #647184;
+            --line: rgba(166, 180, 199, 0.18);
+            --cyan: #28e0c5;
+            --amber: #f7c948;
+            --rose: #ff6b8a;
+            --blue: #6aa9ff;
+            --green: #8bdc65;
+            --font-display: "Manrope", sans-serif;
+            --font-mono: "IBM Plex Mono", monospace;
+            --title-size: clamp(2.4rem, 5.2vw, 4.7rem);
+            --h2-size: clamp(1.7rem, 3.2vw, 3rem);
+            --h3-size: clamp(1rem, 1.55vw, 1.45rem);
+            --body-size: clamp(0.82rem, 1.24vw, 1.08rem);
+            --small-size: clamp(0.7rem, 0.95vw, 0.88rem);
         }
 
-        body { background: var(--stage); color: var(--text); font-family: var(--font-body); }
+        body {
+            color: var(--ink);
+            font-family: var(--font-display);
+        }
 
         .slide {
-            width: 100vw; height: 100vh; height: 100dvh;
-            position: fixed; inset: 0; display: flex;
-            align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.25s ease;
-        }
-
-        .slide.active {
-            opacity: 1; pointer-events: auto;
-        }
-
-        .slide-inner {
-            width: 1280px; height: 720px;
-            box-sizing: border-box;
-            flex-shrink: 0;
-            position: relative;
-            transform-origin: center center;
-            display: flex; flex-direction: column;
-            padding: 40px 48px;
-            background: var(--canvas);
-            border: 1px solid #222;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
             overflow: hidden;
-        }
-
-        .slide-inner::after {
-            content: ''; position: absolute; top: 0; right: 0; width: 400px; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(252, 76, 2, 0.03));
-            pointer-events: none; z-index: 0;
-        }
-
-        .slide-content {
-            flex: 1; display: flex; flex-direction: column;
-            justify-content: center;
-            position: relative; z-index: 2;
-        }
-
-        h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; margin-bottom: 16px; line-height: 1.2; letter-spacing: -0.5px; }
-        h1 { font-size: 64px; letter-spacing: -1.5px; margin-bottom: 24px; color: #fff; }
-        h2 { font-size: 40px; color: #fff; margin-bottom: 24px; }
-        h3 { font-size: 24px; color: #fff; margin-bottom: 12px; }
-        h4 { font-size: 18px; color: #fff; margin-bottom: 8px; }
-        p { font-size: 18px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px; }
-        ul { font-size: 18px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px; }
-        strong { color: #fff; font-weight: 600; }
-        i, em, cite, address, dfn, var { font-style: normal; }
-
-        .tag {
-            display: inline-block; align-self: flex-start; width: fit-content; padding: 6px 14px; background: var(--accent-bg); color: var(--accent);
-            border-radius: 4px; font-family: var(--font-display); font-size: 14px; letter-spacing: 1px;
-            text-transform: uppercase; margin-bottom: 20px; font-weight: 700;
-        }
-
-        .split-layout { display: flex; gap: 48px; }
-        .col { flex: 1; display: flex; flex-direction: column; }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
-
-        .card {
-            background: var(--surface); border: 1px solid var(--surface-border);
-            border-radius: 8px; padding: 16px; position: relative;
-        }
-        .card-icon {
-            width: 28px; height: 28px; border-radius: 4px; background: var(--accent); color: #fff;
-            display: flex; align-items: center; justify-content: center; font-family: var(--font-display);
-            font-weight: 700; margin-bottom: 12px; font-size: 14px;
-        }
-
-        .list-styled { list-style: none; padding: 0; }
-        .list-styled li { position: relative; padding-left: 24px; margin-bottom: 12px; }
-        .list-styled li::before {
-            content: '->'; position: absolute; left: 0; top: 0; color: var(--accent);
-            font-family: var(--font-display); font-weight: 700;
-        }
-
-        .flow-chart { background: rgba(26,30,36,0.8); padding: 32px; border-radius: 8px; border: 1px solid var(--surface-border); text-align: center; }
-        .flow-row { display: flex; justify-content: center; gap: 32px; }
-        .flow-box {
-            background: #2a303c; border: 1px solid #444; padding: 16px 24px; border-radius: 6px;
-            font-family: var(--font-display); font-weight: 700; font-size: 18px; min-width: 180px; color: #fff;
-        }
-        .flow-box.user, .flow-box.agent { border-top: 3px solid #3b82f6; }
-        .flow-box.gateway {
-            border-left: 3px solid var(--accent); background: rgba(252,76,2,0.1);
-            border-color: rgba(252,76,2,0.3); color: var(--accent); margin: 24px auto; max-width: 300px;
-        }
-        .flow-box.policy, .flow-box.vault { border-top: 3px solid #10b981; }
-        .flow-box.resource { border-top: 3px solid #8b5cf6; margin: 24px auto 0; max-width: 300px; }
-        .flow-arrow { font-size: 14px; color: var(--text-muted); margin: 8px 0; letter-spacing: 2px; text-transform: uppercase; font-family: var(--font-body); font-weight: 600; }
-
-        .thesis { font-size: 22px; color: #fff; background: rgba(255,255,255,0.05); padding: 20px; border-left: 4px solid var(--accent); border-radius: 0 4px 4px 0; }
-        .eyebrow-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
-        .mini-pill {
-            display: inline-flex; align-items: center; gap: 8px;
-            color: #fff; background: rgba(255,255,255,0.06); border: 1px solid #2f353f;
-            border-radius: 6px; padding: 8px 10px; font-size: 14px; font-weight: 600;
-        }
-        .mini-pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
-        .compact-card { padding: 14px 16px; }
-        .compact-card p { font-size: 15px; margin-bottom: 0; }
-        .compact-card h4 { font-size: 17px; margin-bottom: 7px; }
-        .timeline {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 24px;
-        }
-        .timeline .card { border-top: 3px solid var(--accent); min-height: 132px; }
-        .metric-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 22px; }
-        .metric {
-            background: rgba(252,76,2,0.09); border: 1px solid rgba(252,76,2,0.28);
-            border-radius: 8px; padding: 14px;
-        }
-        .metric strong { display: block; color: var(--accent); font-family: var(--font-display); font-size: 24px; margin-bottom: 2px; }
-        .metric span { color: var(--text-muted); font-size: 14px; line-height: 1.35; }
-        .two-column-panel {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: stretch;
-        }
-        .panel-title {
-            color: var(--accent); font-size: 18px; margin-bottom: 12px; text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-        .thank-you-slide {
-            background:
-                linear-gradient(120deg, rgba(18,20,24,0.94), rgba(18,20,24,0.78)),
-                radial-gradient(circle at 76% 22%, rgba(252,76,2,0.22), transparent 32%),
-                radial-gradient(circle at 26% 78%, rgba(59,130,246,0.16), transparent 34%),
-                var(--canvas);
-        }
-        .references { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
-        .reference {
-            background: rgba(255,255,255,0.05); border: 1px solid #303640; border-radius: 8px;
-            padding: 14px 16px;
-        }
-        .reference h4 { color: #fff; font-size: 16px; margin-bottom: 5px; }
-        .reference p { font-size: 14px; margin-bottom: 0; }
-        .architecture-image-wrap {
-            flex: 1;
+            position: fixed;
+            inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.22s ease;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .slide-inner {
+            width: 1280px;
+            height: 720px;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 44px 54px;
+            background:
+                linear-gradient(135deg, rgba(13,17,24,0.98), rgba(10,14,20,0.96)),
+                radial-gradient(circle at 80% 12%, rgba(40,224,197,0.16), transparent 28%),
+                radial-gradient(circle at 12% 90%, rgba(247,201,72,0.13), transparent 30%),
+                var(--canvas);
+            border: 1px solid rgba(255,255,255,0.09);
+            box-shadow: 0 30px 90px rgba(0,0,0,0.45);
+        }
+
+        .slide-inner::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.026) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(90deg, rgba(0,0,0,0.62), transparent 82%);
+            pointer-events: none;
+        }
+
+        .slide-content {
+            flex: 1;
+            min-height: 0;
+            max-height: 100%;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* === TYPOGRAPHY === */
+        h1, h2, h3, h4, p, ul { margin-top: 0; }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-display);
+            letter-spacing: 0;
+            line-height: 1.08;
+        }
+
+        h1 {
+            font-size: var(--title-size);
+            max-width: 930px;
+            margin-bottom: 22px;
+        }
+
+        h2 {
+            font-size: var(--h2-size);
+            margin-bottom: 22px;
+        }
+
+        h3 {
+            font-size: var(--h3-size);
+            margin-bottom: 10px;
+        }
+
+        p, li {
+            font-size: var(--body-size);
+            line-height: 1.45;
+            color: var(--muted);
+        }
+
+        strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        em, i, cite, address, dfn, var { font-style: normal; }
+
+        .mono {
+            font-family: var(--font-mono);
+            letter-spacing: 0.03em;
+        }
+
+        .tag {
+            display: inline-flex;
+            width: fit-content;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 12px;
+            margin-bottom: 20px;
+            color: var(--cyan);
+            border: 1px solid rgba(40,224,197,0.3);
+            background: rgba(40,224,197,0.075);
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .tag::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 16px rgba(40,224,197,0.9);
+        }
+
+        .subtitle {
+            max-width: 900px;
+            color: #d8e2ee;
+            font-size: clamp(1.05rem, 1.72vw, 1.45rem);
+            line-height: 1.42;
+        }
+
+        .fineprint {
+            font-size: var(--small-size);
+            color: var(--faint);
+        }
+
+        /* === LAYOUT COMPONENTS === */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: rgba(17,23,34,0.78);
+            max-height: min(80vh, 700px);
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--card-accent, var(--cyan));
+        }
+
+        .card h3, .card h4 { color: var(--ink); }
+        .card p { margin-bottom: 0; }
+
+        .number {
+            display: inline-flex;
+            width: 28px;
+            height: 28px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.08);
+            color: var(--card-accent, var(--cyan));
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 0;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-left: 22px;
+            margin-bottom: 10px;
+        }
+
+        .bullet-list li:last-child { margin-bottom: 0; }
+
+        .bullet-list li::before {
+            content: "";
+            position: absolute;
+            top: 0.72em;
+            left: 1px;
+            width: 8px;
+            height: 2px;
+            background: var(--card-accent, var(--cyan));
+        }
+
+        .rail {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .callout {
+            padding: 16px 18px;
+            border-radius: 8px;
+            color: #dce7f4;
+            border: 1px solid rgba(40,224,197,0.28);
+            background: rgba(40,224,197,0.08);
+        }
+
+        .callout strong { color: var(--cyan); }
+
+        .pause {
+            margin-top: 20px;
+            padding: 12px 15px;
+            border: 1px dashed rgba(247,201,72,0.45);
+            border-radius: 8px;
+            background: rgba(247,201,72,0.07);
+            color: #f8e7a1;
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+        }
+
+        .kicker-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 30px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: #d8e2ee;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: var(--small-size);
+        }
+
+        .route-card { min-height: 132px; }
+
+        .metric {
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.11);
+            background: rgba(255,255,255,0.045);
+        }
+
+        .metric strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--metric-color, var(--cyan));
+            font-family: var(--font-mono);
+            font-size: clamp(1rem, 1.7vw, 1.35rem);
+        }
+
+        .metric span {
+            display: block;
+            color: var(--muted);
+            font-size: var(--small-size);
+            line-height: 1.35;
+        }
+
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: 1.32fr 0.8fr;
+            gap: 22px;
+            align-items: stretch;
             min-height: 0;
         }
-        .architecture-image {
-            width: 100%;
-            max-height: 560px;
-            object-fit: contain;
+
+        .architecture-frame {
+            display: flex;
+            min-height: 0;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
             border-radius: 8px;
-            border: 1px solid rgba(59,130,246,0.35);
-            box-shadow: 0 24px 70px rgba(0,0,0,0.42);
-            background: #040817;
+            border: 1px solid rgba(106,169,255,0.28);
+            background: rgba(5,9,16,0.78);
+        }
+
+        .architecture-frame img {
+            max-width: 100%;
+            max-height: min(48vh, 365px);
+            object-fit: contain;
+            border-radius: 6px;
             cursor: zoom-in;
         }
+
+        .preserve-card {
+            padding: 16px 18px;
+        }
+
+        .preserve-card h3 {
+            margin-bottom: 8px;
+        }
+
+        .preserve-card .bullet-list li {
+            margin-bottom: 7px;
+            font-size: clamp(0.78rem, 1.08vw, 0.98rem);
+            line-height: 1.32;
+        }
+
+        .missing-asset {
+            display: none;
+            min-height: 260px;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            text-align: center;
+            border: 1px dashed rgba(247,201,72,0.45);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
         .image-zoom {
             position: fixed;
             inset: 0;
@@ -183,10 +402,12 @@
             align-items: center;
             justify-content: center;
             padding: 28px;
-            background: rgba(3, 6, 18, 0.92);
+            background: rgba(4, 7, 12, 0.93);
             backdrop-filter: blur(10px);
         }
+
         .image-zoom.open { display: flex; }
+
         .image-zoom img {
             max-width: min(96vw, 1680px);
             max-height: 92vh;
@@ -195,6 +416,7 @@
             box-shadow: 0 28px 90px rgba(0,0,0,0.62);
             cursor: zoom-out;
         }
+
         .image-zoom-hint {
             position: absolute;
             left: 50%;
@@ -204,340 +426,321 @@
             font-size: 13px;
             pointer-events: none;
         }
-        .missing-asset {
-            display: none;
-            width: 100%;
-            min-height: 280px;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: var(--text-muted);
-            background: rgba(0,0,0,0.32);
-            border: 1px dashed rgba(252,76,2,0.45);
-            border-radius: 8px;
-            padding: 24px;
-            box-sizing: border-box;
-        }
-        .missing-asset strong { display: block; margin-bottom: 8px; color: var(--accent); }
 
-        .cover-slide {
-            border: none;
-            background:
-                linear-gradient(90deg, #121418 20%, rgba(18,20,24,0.84) 66%, rgba(18,20,24,0.72)),
-                radial-gradient(circle at 78% 48%, rgba(252,76,2,0.2), transparent 32%),
-                var(--canvas);
-        }
-
-        .architecture-slide {
-            background:
-                radial-gradient(circle at 50% 28%, rgba(252,76,2,0.12), transparent 34%),
-                radial-gradient(circle at 72% 58%, rgba(59,130,246,0.10), transparent 32%),
-                var(--canvas);
-        }
-
-        .architecture-slide .slide-content {
-            justify-content: flex-start;
-            padding-top: 96px;
-        }
-
-        .architecture-slide h2 {
-            margin-bottom: 18px;
-        }
-
-        .architecture-slide .flow-chart {
-            padding: 22px 28px;
-        }
-
-        .architecture-slide .flow-box {
-            padding: 12px 20px;
-        }
-
-        .architecture-slide .flow-box.gateway {
-            margin: 16px auto;
-        }
-
-        .architecture-slide .flow-box.resource {
-            margin-top: 16px;
-        }
-
-        .architecture-slide .flow-arrow {
-            margin: 6px 0;
-        }
-
-        img, .image-container { max-width: 100%; max-height: 400px; object-fit: contain; }
-
+        /* === NAVIGATION AND MOTION === */
         .nav-dots {
-            position: fixed; right: 24px; top: 50%; transform: translateY(-50%);
-            display: flex; flex-direction: column; gap: 10px; z-index: 100;
+            position: fixed;
+            right: 24px;
+            top: 50%;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transform: translateY(-50%);
         }
+
         .dot {
-            width: 10px; height: 10px; border-radius: 50%;
-            background: rgba(128,128,128,0.3); cursor: pointer; transition: all 0.3s;
+            width: 10px;
+            height: 10px;
+            border: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.24);
+            cursor: pointer;
+            transition: transform 0.25s ease, background 0.25s ease;
         }
-        .dot.active { background: var(--accent); transform: scale(1.3); }
+
+        .dot.active {
+            background: var(--cyan);
+            transform: scale(1.35);
+        }
 
         .keyboard-hint {
-            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-            font-size: 13px; color: rgba(128,128,128,0.5); z-index: 100;
-            transition: opacity 0.5s; pointer-events: none;
-            font-family: var(--font-body);
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            z-index: 100;
+            color: rgba(255,255,255,0.38);
+            font-size: 12px;
+            transform: translateX(-50%);
+            pointer-events: none;
+            font-family: var(--font-mono);
         }
 
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
-        .reveal:nth-child(1) { transition-delay: 0.1s; }
-        .reveal:nth-child(2) { transition-delay: 0.2s; }
-        .reveal:nth-child(3) { transition-delay: 0.3s; }
-        .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
-        .reveal-scale { opacity: 0; transform: scale(0.95); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-        .slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-        html.is-mobile, html.is-mobile body { height: auto; overflow-x: hidden; }
-        html.is-mobile { scroll-snap-type: none; }
+        .delay-1 { transition-delay: 0.08s; }
+        .delay-2 { transition-delay: 0.16s; }
+        .delay-3 { transition-delay: 0.24s; }
+        .delay-4 { transition-delay: 0.32s; }
+
+        html.is-mobile, html.is-mobile body {
+            height: auto;
+            overflow-x: hidden;
+        }
+
         html.is-mobile .slide {
-            width: 100vw; display: block; overflow: hidden; position: relative;
-            margin: 0 0 16px 0; box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+            width: 100vw;
+            display: block;
+            overflow: hidden;
+            position: relative;
+            margin: 0 0 16px 0;
         }
-        html.is-mobile .slide:last-child { margin-bottom: 0; }
-        html.is-mobile .slide-inner { transform-origin: top left; position: absolute; top: 0; left: 0; }
-        html.is-mobile .nav-dots, html.is-mobile .keyboard-hint { display: none; }
+
+        html.is-mobile .slide-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top left;
+        }
+
+        html.is-mobile .nav-dots,
+        html.is-mobile .keyboard-hint {
+            display: none;
+        }
+
+        @media (max-height: 700px) {
+            :root {
+                --title-size: clamp(2rem, 4.4vw, 3.6rem);
+                --h2-size: clamp(1.45rem, 2.8vw, 2.35rem);
+                --body-size: clamp(0.76rem, 1.1vw, 0.96rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            .nav-dots, .keyboard-hint { display: none; }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --body-size: clamp(0.68rem, 0.95vw, 0.82rem);
+            }
+        }
 
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+
             html { scroll-behavior: auto; }
         }
     </style>
 </head>
 <body>
-    <nav class="nav-dots"></nav>
+    <nav class="nav-dots" aria-label="Slide navigation"></nav>
 
     <!-- Slide 1: Cover -->
     <section class="slide" id="slide-1">
         <div class="slide-inner">
-            <div class="slide-content" style="width: 86%;">
-                <div class="tag reveal" contenteditable="true">Technical Challenge</div>
-                <h1 class="reveal" contenteditable="true" style="font-size: 56px;">Agent Security Infrastructure</h1>
-                <p class="reveal" contenteditable="true" style="font-size: 24px; color: #fff; white-space: nowrap;">Agent Identity, delegated authorization, credential safety, and auditability.</p>
-                <div class="reveal" style="margin-top: 40px; display: flex; gap: 40px;">
-                    <div style="border-left: 4px solid var(--accent); padding-left: 16px;">
-                        <p style="font-size: 18px; color: #fff; margin-bottom: 4px; font-weight: 600;" contenteditable="true">Yan Cao</p>
-                        <p style="font-size: 16px; color: var(--text-muted); margin-bottom: 0;" contenteditable="true">Engineering Manager, Identity & Security Platform</p>
-                    </div>
-                    <div>
-                        <p style="font-size: 16px; color: #fff; margin-bottom: 4px; font-weight: 600;" contenteditable="true">Presentation Structure</p>
-                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 0; line-height: 1.5;" contenteditable="true">Context, roadmap, XFN & execution<br>Architecture, scale, reliability & lessons</p>
-                    </div>
+            <div class="slide-content">
+                <div class="tag reveal">Discussion Case Study</div>
+                <h1 class="reveal delay-1">AI Security Infrastructure</h1>
+                <p class="subtitle reveal delay-2">A reusable trust foundation for production AI agents: identity, delegated authorization, credential safety, policy enforcement, and full-chain auditability.</p>
+                <div class="kicker-row reveal delay-3">
+                    <span class="pill">Senior EM scope</span>
+                    <span class="pill">AI-native platform risk</span>
+                    <span class="pill">Cross-functional execution</span>
+                    <span class="pill">Technical tradeoffs</span>
+                </div>
+                <div class="callout reveal delay-4" style="width: 760px; margin-top: 44px;">
+                    <strong>Format:</strong> short narrative, then discussion. I can go deeper on architecture, operating model, product adoption, metrics, or what I would do differently.
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Slide 2: Why Agent Security Became A Platform Problem -->
+    <!-- Slide 2: Platform Problem -->
     <section class="slide" id="slide-2">
         <div class="slide-inner">
             <div class="slide-content">
-                <h2 class="reveal" contenteditable="true" style="margin-bottom: 12px;">Why Agent Security Became A Platform Problem</h2>
-                <div class="split-layout" style="gap: 24px;">
-                    <div class="col left reveal">
-                        <p class="thesis" contenteditable="true" style="font-size: 15px; padding: 12px 16px; margin-bottom: 16px;"><strong contenteditable="true">What We Did:</strong> Built a reusable foundation for production AI agents: agents get identities, users delegate work, tool access is authorized, credentials managed via Vault, and the User -> Agent -> Resource chain is auditable.</p>
-                        <div style="margin-top: 12px;">
-                            <h4 contenteditable="true" style="color: var(--accent); font-size: 16px;">Why Now</h4>
-                            <ul class="list-styled" style="font-size: 14px; margin-bottom: 16px;">
-                                <li contenteditable="true">Agents autonomously calling MCP, internal APIs, and 3rd-party resources.</li>
-                                <li contenteditable="true">Agent adoption reached production scale across multiple runtimes.</li>
-                                <li contenteditable="true">Legacy IAM (users/services) not built for delegation or dynamic tools.</li>
-                            </ul>
-                        </div>
-                        <div style="margin-top: 12px;">
-                            <h4 contenteditable="true" style="color: var(--accent); font-size: 16px;">My Role (Senior EM)</h4>
-                            <ul class="list-styled" style="font-size: 14px; margin-bottom: 0;">
-                                <li contenteditable="true">Accountable for platform architecture direction; 30-person XFN effort.</li>
-                                <li contenteditable="true">Defined trust boundaries, ownership, and aligned 15+ XFN partners.</li>
-                                <li contenteditable="true">Owned Identity across human, service, and agent domains, plus Token Vault.</li>
-                            </ul>
-                        </div>
+                <div class="tag reveal">Why Now</div>
+                <h2 class="reveal delay-1">AI agents changed the trust boundary.</h2>
+                <div class="rail">
+                    <div class="card reveal delay-2" style="--card-accent: var(--cyan);">
+                        <h3>Core thesis</h3>
+                        <p>Once agents started acting in production, the problem was no longer "add more security checks." The platform needed to understand <strong>who delegated work, which agent acted, what resource was touched, which credential was used, and how to audit the full chain.</strong></p>
                     </div>
-                    <div class="col right reveal" style="transition-delay: 0.2s;">
-                        <h4 contenteditable="true" style="color: var(--accent); margin-bottom: 12px; font-size: 16px;">Our Solutions</h4>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <div class="card" style="padding: 10px 14px;">
-                                <h4 contenteditable="true" style="font-size: 15px; margin-bottom: 4px;">Identity Delegation Confusion -> First-class Agent Identity</h4>
-                                <p style="font-size: 13px; margin-bottom: 0;" contenteditable="true">Give agents independent first-class identities and natively support a trusted Human -> Agent delegation chain on top of unified identity.</p>
-                            </div>
-                            <div class="card" style="padding: 10px 14px;">
-                                <h4 contenteditable="true" style="font-size: 15px; margin-bottom: 4px;">Permission Overreach -> Dynamic & Fine-Grained AuthZ</h4>
-                                <p style="font-size: 13px; margin-bottom: 0;" contenteditable="true">Context-aware permission model reaches the tool / data-domain level.</p>
-                            </div>
-                            <div class="card" style="padding: 10px 14px;">
-                                <h4 contenteditable="true" style="font-size: 15px; margin-bottom: 4px;">Credential Leakage -> Centralized Custody</h4>
-                                <p style="font-size: 13px; margin-bottom: 0;" contenteditable="true">Outbound tokens go through Token Vault; short-lived scoped credentials.</p>
-                            </div>
-                            <div class="card" style="padding: 10px 14px;">
-                                <h4 contenteditable="true" style="font-size: 15px; margin-bottom: 4px;">Poor Traceability -> Full-Chain Audit</h4>
-                                <p style="font-size: 13px; margin-bottom: 0;" contenteditable="true">User -> Agent -> Resource path is traceable for accountability and compliance.</p>
-                            </div>
-                        </div>
+                    <div class="card reveal delay-3" style="--card-accent: var(--amber);">
+                        <h3>Pressure came from two sides</h3>
+                        <ul class="bullet-list">
+                            <li>Internal agent teams wanted speed and low developer burden.</li>
+                            <li>Enterprise customers wanted control, visibility, and trust.</li>
+                            <li>Existing IAM assumed humans and services, not delegated agents.</li>
+                        </ul>
                     </div>
                 </div>
+                <div class="grid-4 reveal delay-4" style="margin-top: 18px;">
+                    <div class="metric" style="--metric-color: var(--cyan);"><strong>Identity</strong><span>agent as first-class actor</span></div>
+                    <div class="metric" style="--metric-color: var(--amber);"><strong>AuthZ</strong><span>user + agent + resource + action</span></div>
+                    <div class="metric" style="--metric-color: var(--rose);"><strong>Vault</strong><span>credentials never live loosely in runtime</span></div>
+                    <div class="metric" style="--metric-color: var(--blue);"><strong>Audit</strong><span>user -> agent -> resource chain</span></div>
+                </div>
+                <div class="pause reveal delay-4">Pause point: is the agent risk model clear, or should we unpack the security failure modes first?</div>
             </div>
         </div>
     </section>
 
-    <!-- Slide 3: How We Got It Done -->
+    <!-- Slide 3: Leadership and Operating Model -->
     <section class="slide" id="slide-3">
         <div class="slide-inner">
             <div class="slide-content">
-                <h2 class="reveal" contenteditable="true">How We Got It Done</h2>
-                <div class="grid-3" style="margin-top: 16px;">
-                    <div class="card reveal-scale" style="transition-delay: 0.1s;">
-                        <h3 contenteditable="true" style="font-size: 20px; color: var(--accent);">Roadmap Direction</h3>
-                        <ul class="list-styled" style="font-size: 14px; margin-bottom: 16px;">
-                            <li contenteditable="true">Internal AI Infra and Agent Developers</li>
-                            <li contenteditable="true">Public Cloud for Serve ToB customers</li>
-                        </ul>
-                        <div style="height: 1px; background: #333; margin: 16px 0;"></div>
-                        <h3 contenteditable="true" style="font-size: 20px; color: var(--accent);">Ownership Map</h3>
-                        <ul class="list-styled" style="font-size: 14px; margin-bottom: 0;">
-                            <li contenteditable="true"><strong contenteditable="true">Direct Report Team:</strong> Identity (Human, Service, Agent) & Token Vault.</li>
-                            <li contenteditable="true"><strong contenteditable="true">Peer Engineering Team:</strong> AuthZ & Gateway.</li>
-                            <li contenteditable="true"><strong contenteditable="true">Close XFN:</strong> SRE / QA / frontend / design / TPM / PM.</li>
-                            <li contenteditable="true"><strong contenteditable="true">Extended XFN:</strong> ToB Sales, internal & external cloud infra, security partners, PR / Legal / Privacy.</li>
+                <div class="tag reveal">Leadership Challenge</div>
+                <h2 class="reveal delay-1">The hard part was keeping one foundation while teams moved fast.</h2>
+                <div class="grid-3">
+                    <div class="card reveal delay-2" style="--card-accent: var(--cyan);">
+                        <span class="number">01</span>
+                        <h3>Define platform contracts</h3>
+                        <ul class="bullet-list">
+                            <li>identity namespace</li>
+                            <li>delegation semantics</li>
+                            <li>credential boundary</li>
+                            <li>policy and audit model</li>
                         </ul>
                     </div>
-                    <div class="card reveal-scale" style="transition-delay: 0.2s;">
-                        <h3 contenteditable="true" style="font-size: 20px; color: var(--accent);">Operating Model</h3>
-                        <ul class="list-styled" style="font-size: 13px; line-height: 1.38; margin-bottom: 0;">
-                            <li contenteditable="true"><strong contenteditable="true">Strategy and success criteria:</strong> Agent Identity as a default security foundation.</li>
-                            <li contenteditable="true"><strong contenteditable="true">Ownership and accountability:</strong> clear owners across identity, AuthZ, vault, gateway, SRE/QA, PM, and TPM.</li>
-                            <li contenteditable="true"><strong contenteditable="true">Architecture decision process:</strong> irreversible contracts first: namespace, delegation, credentials, policy, and audit.</li>
-                            <li contenteditable="true"><strong contenteditable="true">Execution rhythm:</strong> TPM tracking, EM/TL reviews, PM prioritization, and launch readiness.</li>
-                            <li contenteditable="true"><strong contenteditable="true">Learning loop:</strong> H2 retro actions on cadence, ownership, dependencies, freeze, intake, and stability drills.</li>
+                    <div class="card reveal delay-3" style="--card-accent: var(--amber);">
+                        <span class="number">02</span>
+                        <h3>Map ownership</h3>
+                        <ul class="bullet-list">
+                            <li>direct org: identity and credential vault</li>
+                            <li>peer teams: authorization and gateway</li>
+                            <li>XFN: PM, TPM, SRE, QA, product surface</li>
                         </ul>
                     </div>
-                    <div class="card reveal-scale" style="transition-delay: 0.3s; background: rgba(252, 76, 2, 0.05); border-color: rgba(252, 76, 2, 0.2);">
-                        <h3 contenteditable="true" style="font-size: 20px; color: var(--accent);">Key Tradeoff</h3>
-                        <p contenteditable="true" style="font-size: 14px; margin-bottom: 16px;">Avoided a one-off feature for one platform. Goal was a <strong contenteditable="true">reusable trust foundation</strong>.</p>
-                        <div style="height: 1px; background: rgba(252, 76, 2, 0.2); margin: 16px 0;"></div>
-                        <h3 contenteditable="true" style="font-size: 20px; color: var(--accent);">Stumbling Block</h3>
-                        <p contenteditable="true" style="font-size: 14px; margin-bottom: 8px;">Shifted to OpenClaw ecosystem integration (skills/hooks) without losing core runtime control.</p>
-                        <p contenteditable="true" style="font-size: 14px; margin-bottom: 0;">Shipped OpenClaw path quickly, but kept identity, delegation & audit as reusable contracts.</p>
+                    <div class="card reveal delay-4" style="--card-accent: var(--rose);">
+                        <span class="number">03</span>
+                        <h3>Create execution rhythm</h3>
+                        <ul class="bullet-list">
+                            <li>TPM dependency tracking</li>
+                            <li>EM/TL architecture reviews</li>
+                            <li>SRE/QA launch readiness</li>
+                            <li>retro-driven operating changes</li>
+                        </ul>
                     </div>
                 </div>
+                <div class="grid-2 reveal delay-4" style="margin-top: 18px;">
+                    <div class="callout"><strong>My role:</strong> I did not replace the M1/TLs. I held the bar on irreversible platform decisions and cross-team accountability.</div>
+                    <div class="callout"><strong>Product lens:</strong> adoption meant docs, onboarding, reference integrations, admin visibility, and making the secure path easier than bypass.</div>
+                </div>
+                <div class="pause reveal delay-4">Pause point: useful to go deeper on ownership, product adoption, or how I handled resistance?</div>
             </div>
         </div>
     </section>
 
-    <!-- Slide 4: Architecture -->
+    <!-- Slide 4: Architecture and Observability -->
     <section class="slide" id="slide-4">
         <div class="slide-inner">
-            <div class="slide-content" style="align-items: flex-start; justify-content: flex-start; padding-top: 0;">
-                <h2 class="reveal" contenteditable="true" style="margin-bottom: 16px;">Technical Architecture And Trust Boundary</h2>
-                <div class="reveal" style="width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 16px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--surface-border); padding: 12px;">
-                    <img class="zoomable-image" src="assets/technical-architecture.png" alt="Architecture Diagram" style="max-height: 280px; object-fit: contain; width: auto; border-radius: 4px; cursor: zoom-in;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="missing-asset">
-                        <span><strong>Missing architecture image</strong>Save the provided diagram as assets/technical-architecture.png</span>
+            <div class="slide-content">
+                <div class="tag reveal">Architecture</div>
+                <h2 class="reveal delay-1">Trust boundary: inbound invocation, outbound action, and audit evidence.</h2>
+                <div class="architecture-grid">
+                    <div class="architecture-frame reveal delay-2">
+                        <img class="zoomable-image" src="assets/technical-architecture.png" alt="AI Security Infrastructure architecture diagram" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="missing-asset"><strong>Missing architecture image</strong><br>Expected: assets/technical-architecture.png</div>
                     </div>
-                </div>
-                <div class="split-layout reveal" style="transition-delay: 0.2s; gap: 20px; width: 100%;">
-                    <div class="col" style="flex: 1;">
-                        <ul class="list-styled" style="font-size: 13px; margin-bottom: 0;">
-                            <li contenteditable="true"><strong contenteditable="true">Federated User Identity:</strong> Enterprise/3rd-party IdP federates into UserPool.</li>
-                            <li contenteditable="true"><strong contenteditable="true">Agent Identity:</strong> First-class identities, no user/service account impersonation.</li>
-                            <li contenteditable="true"><strong contenteditable="true">Delegation (TIP):</strong> Trusted Identity Propagation carries user + agent context.</li>
-                        </ul>
-                    </div>
-                    <div class="col" style="flex: 1;">
-                        <ul class="list-styled" style="font-size: 13px; margin-bottom: 0;">
-                            <li contenteditable="true"><strong contenteditable="true">Permission Management:</strong> Authorize by trust chain + resource/action/context.</li>
-                            <li contenteditable="true"><strong contenteditable="true">Credential Mgmt:</strong> Centralized OAuth, API keys, cookies.</li>
-                            <li contenteditable="true"><strong contenteditable="true">Inbound/Outbound Control:</strong> Gateway enforces rules directly on the traffic path.</li>
+                    <div class="card preserve-card reveal delay-3" style="--card-accent: var(--blue);">
+                        <h3>What must be preserved</h3>
+                        <ul class="bullet-list">
+                            <li><strong>User identity</strong> through enterprise or first-party federation.</li>
+                            <li><strong>Agent identity</strong> as a first-class actor, not user impersonation.</li>
+                            <li><strong>Delegation context</strong> propagated across tool and API calls.</li>
+                            <li><strong>Credential custody</strong> through a vault with scoped release.</li>
+                            <li><strong>Policy enforcement</strong> on the traffic path, not only in docs.</li>
                         </ul>
                     </div>
                 </div>
-                <div class="reveal" style="transition-delay: 0.3s; margin-top: 12px; font-size: 13px; color: var(--accent); padding: 8px 16px; background: var(--accent-bg); border-radius: 4px; display: inline-block;">
-                    <strong contenteditable="true">Important distinction:</strong> Inbound = "Who can call this agent?" | Outbound = "What can this agent do?" - Outbound control is where most damage is stopped.
+                <div class="grid-3 reveal delay-4" style="margin-top: 16px;">
+                    <div class="metric" style="--metric-color: var(--cyan);"><strong>Inbound</strong><span>Who can invoke this agent?</span></div>
+                    <div class="metric" style="--metric-color: var(--rose);"><strong>Outbound</strong><span>What can the agent do?</span></div>
+                    <div class="metric" style="--metric-color: var(--amber);"><strong>Observability</strong><span>trace ID, policy logs, allow/deny reason, gateway metrics, vault access, bypass alerts</span></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Slide #5: Results & Learnings -->
+    <!-- Slide 5: Tradeoffs and Metrics -->
     <section class="slide" id="slide-5">
         <div class="slide-inner">
             <div class="slide-content">
-                <h2 class="reveal" contenteditable="true">Results & Learnings</h2>
-                <div class="grid-2" style="margin-top: 16px;">
-                    <div class="col reveal card">
-                        <h3 contenteditable="true" style="font-size: 20px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 12px;">Results</h3>
-                        <ul class="list-styled" style="font-size: 14px; margin-top: 16px; margin-bottom: 0;">
-                            <li contenteditable="true">Shared model for agent identity, delegation, permissions, vaulting, and audit.</li>
-                            <li contenteditable="true">Integrated MCP/tool ecosystems, OpenClaw-style agents & cloud surfaces.</li>
-                            <li contenteditable="true">Aligned 9+ functions around one trust foundation.</li>
-                            <li contenteditable="true">Enterprise POCs (50K+ employees) & production readiness (multi-AZ, rate limits).</li>
+                <div class="tag reveal">Judgment</div>
+                <h2 class="reveal delay-1">Tradeoffs were about enforcement strength, adoption cost, and platform leverage.</h2>
+                <div class="grid-2">
+                    <div class="card reveal delay-2" style="--card-accent: var(--cyan);">
+                        <h3>Gateway vs. sidecar / plugin</h3>
+                        <ul class="bullet-list">
+                            <li>Gateway gave stronger enforcement and centralized evidence.</li>
+                            <li>Sidecar/plugin paths reduced adoption friction but were easier to bypass.</li>
+                            <li>Managed/high-risk internal traffic used stronger enforcement.</li>
+                            <li>Long-tail customer paths needed more flexible integration.</li>
                         </ul>
                     </div>
-                    <div class="col reveal card" style="transition-delay: 0.2s;">
-                        <h3 contenteditable="true" style="font-size: 20px; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 12px;">Lessons Learned</h3>
-                        <ul class="list-styled" style="font-size: 14px; margin-top: 16px; margin-bottom: 0;">
-                            <li contenteditable="true">Platform path is mandatory; SDK-only controls are too easy to bypass.</li>
-                            <li contenteditable="true">Identity semantics must be unified early before platforms invent their own.</li>
-                            <li contenteditable="true">Product adoption requires reducing developer burden, not just adding gates.</li>
-                            <li contenteditable="true">EM challenge: balance platform coherence with urgent customer asks.</li>
+                    <div class="card reveal delay-3" style="--card-accent: var(--amber);">
+                        <h3>Reusable contract vs. one-off integration</h3>
+                        <ul class="bullet-list">
+                            <li>Move fast on the ecosystem-specific integration surface.</li>
+                            <li>Do not let one integration redefine identity or delegation semantics.</li>
+                            <li>Keep credential boundary, policy model, and audit contract reusable.</li>
+                            <li>Say no when customer urgency would fragment the foundation.</li>
                         </ul>
                     </div>
+                </div>
+                <div class="grid-3 reveal delay-4" style="margin-top: 18px;">
+                    <div class="metric" style="--metric-color: var(--green);"><strong>Health</strong><span>latency, error rate, availability, policy-decision latency, vault success rate</span></div>
+                    <div class="metric" style="--metric-color: var(--blue);"><strong>Adoption</strong><span>platforms onboarded, tool calls protected, credential paths migrated</span></div>
+                    <div class="metric" style="--metric-color: var(--rose);"><strong>Risk</strong><span>fewer long-lived secrets, complete audit chains, policy coverage, lower bypass surface</span></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Slide #6: Thank You -->
+    <!-- Slide 6: Discussion Map -->
     <section class="slide" id="slide-6">
         <div class="slide-inner">
-            <div class="slide-content" style="align-items: center; text-align: center;">
-                <h2 class="reveal" contenteditable="true" style="font-size: 56px; margin-bottom: 24px;">Thank You</h2>
-                <p class="reveal" contenteditable="true" style="max-width: 800px; margin-bottom: 48px; font-size: 18px;">
-                    Happy to go deeper into the technical architecture, rollout strategy, cross-functional execution model, or the tradeoffs between reusable platform foundation and OpenClaw-specific integration.
-                </p>
-                <div class="reveal card" style="width: 100%; max-width: 900px; text-align: left; padding: 0; overflow: hidden; transition-delay: 0.2s;">
-                    <div style="background: rgba(255,255,255,0.05); padding: 10px 18px; border-bottom: 1px solid #333;">
-                        <h3 contenteditable="true" style="margin: 0; font-size: 17px;">Learn More</h3>
+            <div class="slide-content">
+                <div class="tag reveal">Discussion Map</div>
+                <h2 class="reveal delay-1">Where would you like to go deeper?</h2>
+                <div class="grid-4">
+                    <div class="card route-card reveal delay-2" style="--card-accent: var(--cyan);">
+                        <h3>Architecture</h3>
+                        <p>agent identity, delegation, credential custody, gateway, observability</p>
                     </div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
-                        <thead>
-                            <tr style="border-bottom: 1px solid #333; background: rgba(0,0,0,0.2);">
-                                <th style="padding: 8px 18px; text-align: left; color: var(--accent); font-family: var(--font-display);">Link</th>
-                                <th style="padding: 8px 18px; text-align: left; color: var(--accent); font-family: var(--font-display);">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="border-bottom: 1px solid #222;">
-                                <td style="padding: 10px 18px; vertical-align: top;"><a href="https://yan.cao.engineer/" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none;">Yan Cao personal website</a></td>
-                                <td style="padding: 10px 18px; color: var(--text-muted);" contenteditable="true">Personal website for additional background and public profile.</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #222;">
-                                <td style="padding: 10px 18px; vertical-align: top;"><a href="https://clawhub.ai/plugins/@m1a0rz/agent-identity" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none;">ClawHub Agent Identity plugin</a></td>
-                                <td style="padding: 10px 18px; color: var(--text-muted);" contenteditable="true">Our OpenClaw skill in ClawHub, showing the public integration surface for agent identity.</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 10px 18px; vertical-align: top;"><a href="https://www.volcengine.com/live/activity/webinar-20260120" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none;">Volcengine public webinar / product demo</a></td>
-                                <td style="padding: 10px 18px; color: var(--text-muted);" contenteditable="true">Public presentation and demo used to promote our product externally.</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="card route-card reveal delay-3" style="--card-accent: var(--amber);">
+                        <h3>Leadership</h3>
+                        <p>ownership map, M1/TL leverage, decision rights, operating rhythm</p>
+                    </div>
+                    <div class="card route-card reveal delay-4" style="--card-accent: var(--blue);">
+                        <h3>Adoption</h3>
+                        <p>developer burden, onboarding, product surface, enterprise requirements</p>
+                    </div>
+                    <div class="card route-card reveal delay-4" style="--card-accent: var(--rose);">
+                        <h3>Lessons</h3>
+                        <p>what I would do differently, metrics, rollout risk, platform coherence</p>
+                    </div>
+                </div>
+                <div class="callout reveal delay-4" style="margin-top: 28px;">
+                    <strong>My takeaway:</strong> AI security infrastructure only works when the secure path is a paved path: technically enforceable, operationally observable, and easier for product teams to adopt than inventing their own local model.
                 </div>
             </div>
         </div>
     </section>
 
     <div class="image-zoom" id="image-zoom" aria-hidden="true">
-        <img src="assets/technical-architecture.png" alt="Architecture Diagram enlarged">
+        <img src="assets/technical-architecture.png" alt="AI Security Infrastructure architecture diagram enlarged">
         <div class="image-zoom-hint">Click or press Esc to close</div>
     </div>
 
-    <div class="keyboard-hint" contenteditable="false">Use arrow keys or mouse wheel to navigate</div>
+    <div class="keyboard-hint">Arrow keys / wheel / dots</div>
 
     <script>
+        /* === PRESENTATION CONTROLLER === */
         class SlidePresentation {
             constructor() {
                 this.slides = document.querySelectorAll('.slide');
@@ -546,40 +749,69 @@
                 this.lastWheelAt = 0;
                 this.setupKeyboard();
                 this.setupWheel();
-                this.setupImageZoom();
                 this.setupDots();
+                this.setupImageZoom();
                 this.setupInitialHash();
-                this.hideHintOnScroll();
             }
-            setupObserver() {
-            }
+
             setupKeyboard() {
-                window.addEventListener('keydown', e => {
-                    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
-                        e.preventDefault(); this.go(this.current + 1);
-                    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-                        e.preventDefault(); this.go(this.current - 1);
+                window.addEventListener('keydown', event => {
+                    if (event.key === 'ArrowDown' || event.key === 'ArrowRight' || event.key === ' ') {
+                        event.preventDefault();
+                        this.go(this.current + 1);
+                    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+                        event.preventDefault();
+                        this.go(this.current - 1);
                     }
                 });
             }
-            setupWheel() {
-                window.addEventListener('wheel', e => {
-                    if (document.documentElement.classList.contains('is-mobile')) return;
-                    const dominantDelta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-                    if (Math.abs(dominantDelta) < 8) return;
-                    e.preventDefault();
 
+            setupWheel() {
+                window.addEventListener('wheel', event => {
+                    if (document.documentElement.classList.contains('is-mobile')) return;
+                    const dominantDelta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+                    if (Math.abs(dominantDelta) < 8) return;
+                    event.preventDefault();
                     const now = Date.now();
                     if (now - this.lastWheelAt < 650) return;
                     this.lastWheelAt = now;
                     this.go(this.current + (dominantDelta > 0 ? 1 : -1));
                 }, { passive: false });
             }
+
+            setupDots() {
+                this.slides.forEach((_, index) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'dot';
+                    dot.type = 'button';
+                    dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+                    dot.onclick = () => this.go(index);
+                    this.dots.appendChild(dot);
+                });
+                this.updateDots();
+            }
+
+            updateDots() {
+                this.dots.querySelectorAll('.dot').forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.current);
+                });
+            }
+
+            go(index) {
+                if (index < 0 || index >= this.slides.length) return;
+                this.slides.forEach((slide, slideIndex) => {
+                    slide.classList.toggle('active', slideIndex === index);
+                    slide.classList.toggle('visible', slideIndex === index);
+                });
+                this.current = index;
+                this.updateDots();
+                if (this.slides[index].id) history.replaceState(null, '', `#${this.slides[index].id}`);
+            }
+
             setupImageZoom() {
                 const zoom = document.getElementById('image-zoom');
                 const trigger = document.querySelector('.zoomable-image');
                 if (!zoom || !trigger) return;
-
                 const close = () => {
                     zoom.classList.remove('open');
                     zoom.setAttribute('aria-hidden', 'true');
@@ -588,63 +820,25 @@
                     zoom.classList.add('open');
                     zoom.setAttribute('aria-hidden', 'false');
                 };
-
                 trigger.addEventListener('click', open);
                 zoom.addEventListener('click', close);
-                window.addEventListener('keydown', e => {
-                    if (e.key === 'Escape') close();
+                window.addEventListener('keydown', event => {
+                    if (event.key === 'Escape') close();
                 });
             }
-            setupDots() {
-                this.slides.forEach((s, i) => {
-                    const dot = document.createElement('div');
-                    dot.className = 'dot';
-                    dot.onclick = () => this.go(i);
-                    this.dots.appendChild(dot);
-                });
-                this.updateDots();
-            }
-            updateDots() {
-                this.dots.querySelectorAll('.dot').forEach((d, i) => {
-                    d.classList.toggle('active', i === this.current);
-                });
-            }
-            go(i) {
-                if (i >= 0 && i < this.slides.length) {
-                    this.slides.forEach((slide, index) => {
-                        slide.classList.toggle('active', index === i);
-                        slide.classList.toggle('visible', index === i);
-                    });
-                    this.current = i;
-                    this.updateDots();
-                    if (this.slides[i].id) history.replaceState(null, '', `#${this.slides[i].id}`);
-                }
-            }
+
             setupInitialHash() {
                 if (!window.location.hash) {
                     this.go(0);
                     return;
                 }
                 const target = document.querySelector(window.location.hash);
-                if (!target) {
-                    this.go(0);
-                    return;
-                }
-                const index = [...this.slides].indexOf(target);
+                const index = target ? [...this.slides].indexOf(target) : -1;
                 this.go(index < 0 ? 0 : index);
             }
-            hideHintOnScroll() {
-                const hint = document.querySelector('.keyboard-hint');
-                if (!hint) return;
-                let hidden = false;
-                window.addEventListener('scroll', () => {
-                    if (!hidden && window.scrollY > 50) {
-                        hint.style.opacity = '0';
-                        hidden = true;
-                    }
-                });
-            }
         }
+
+        /* === VIEWPORT SCALER === */
         class ScaleController {
             constructor(refWidth = 1280, refHeight = 720) {
                 this.refW = refWidth;
@@ -657,18 +851,20 @@
                 window.addEventListener('resize', () => this.resize());
                 window.addEventListener('orientationchange', () => this.resize());
             }
+
             resize() {
                 if (this.isMobile) {
-                    const s = window.innerWidth / this.refW;
-                    const scaledH = this.refH * s;
-                    this.inners.forEach(inner => { inner.style.transform = `scale(${s})`; });
-                    this.slides.forEach(slide => { slide.style.height = `${scaledH}px`; });
+                    const scale = window.innerWidth / this.refW;
+                    const scaledHeight = this.refH * scale;
+                    this.inners.forEach(inner => { inner.style.transform = `scale(${scale})`; });
+                    this.slides.forEach(slide => { slide.style.height = `${scaledHeight}px`; });
                     return;
                 }
-                const s = Math.min(window.innerWidth / this.refW, window.innerHeight / this.refH);
-                this.inners.forEach(inner => { inner.style.transform = `scale(${s})`; });
+                const scale = Math.min(window.innerWidth / this.refW, window.innerHeight / this.refH);
+                this.inners.forEach(inner => { inner.style.transform = `scale(${scale})`; });
             }
         }
+
         new SlidePresentation();
         new ScaleController();
     </script>
